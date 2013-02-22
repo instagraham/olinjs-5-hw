@@ -50,15 +50,18 @@ function facebookGetUser(req, res) {
 }
 
 app.get('/', facebookGetUser(), function (req, res) {
+  console.log(req.session.user_id)
   models.User.find({id:req.session.user_id}).exec(function(err, cats){
     if (err)
       return console.log("error", err);
+    if (cats.length>0) {
+    console.log(cats, 'here')
     req.session.userdefinedbackground = cats[0].background
     req.session.ppicsize = cats[0].profpicsize
     req.session.friend = cats[0].topfriend
     req.session.profpic = cats[0].profpic
     req.session.first_name = cats[0].firstname
-
+    }
     if (!req.session.userdefinedbackground) {
       req.session.userdefinedbackground = 'blue'
     }
