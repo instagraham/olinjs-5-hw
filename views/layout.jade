@@ -3,6 +3,18 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(type='text/css', rel='stylesheet', href='/javascripts/widget/css/rcarousel.css')
+
+    script(type='text/javascript', src='/javascripts/widget/lib/jquery-1.7.1.min.js')
+    script(type='text/javascript', src='/javascripts/widget/lib/jquery.ui.core.min.js')
+    script(type='text/javascript', src='/javascripts/widget/lib/jquery.ui.widget.min.js')
+    script(type='text/javascript', src='/javascripts/widget/lib/jquery.ui.rcarousel.min.js')
+    
+    script(type='text/javascript')
+      jQuery(function($){
+        $( "#carousel").rcarousel({auto: {enabled: "false"}, width: 200, height: 300, visible: 1, step: 1});
+      });
+
   body
     block content
 
@@ -66,4 +78,4 @@ html
       margin-left: 1px;
       margin-top:-1px;
       white-space: nowrap;
-      }
+      }auto: {enabled: true}

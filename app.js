@@ -50,85 +50,42 @@ function facebookGetUser(req, res) {
 }
 
 app.get('/', facebookGetUser(), function (req, res) {
-  console.log(req.session.user_id)
   models.User.find({id:req.session.user_id}).exec(function(err, cats){
     if (err)
       return console.log("error", err);
-    if (cats.length>0) {
-    console.log(cats, 'here')
-    req.session.userdefinedbackground = cats[0].background
-    req.session.ppicsize = cats[0].profpicsize
-    req.session.friend = cats[0].topfriend
-    req.session.profpic = cats[0].profpic
-    req.session.first_name = cats[0].firstname
-    }
-    if (!req.session.userdefinedbackground) {
-      req.session.userdefinedbackground = 'blue'
-    }
-
-    if (!req.session.ppicsize) {
-      req.session.ppicsize = '/me/picture?redirect=false&type=large'
-    }
-    
-    req.facebook.api(req.session.ppicsize, function(err, ppic) {
-      req.session.profpic = ppic.data.url
-      req.facebook.api('/me', function(err, data){
-        req.session.first_name = data.first_name
-        req.facebook.api('/me/friends', function(err, friends) {
-          if (!req.session.friend) {
-            req.session.friend = 280
-          }
-          if (req.body.changefriend == 'true') {
-            req.session.friend = Math.floor(Math.random()*(friends.data.length))
-          }
-          req.facebook.api('/'+friends.data[req.session.friend].id+'/picture?redirect=false&type=large', function(err,fppic) {
-            var friendpic = fppic.data.url
-            var friendname = friends.data[req.session.friend].name
-            res.render('index', {
-              title:"profile", 
-              photo:req.session.profpic, 
-              first_name:req.session.first_name, 
-              friendpic:friendpic, 
-              friendname:friendname,
-              userdefinedbackground:req.session.userdefinedbackground
-            });
-          });
+    req.facebook.api('/me/friends', function(err, friends) {
+      var randfriend = Math.floor(Math.random()*(friends.data.length))
+      var randfriendname = friends.data[randfriend].name
+      console.log(randfriendname)
+      req.facebook.api('/'+friends.data[randfriend].id+'/photos', function(err, timpics) {
+        if (timpics.data.length == 0) {
+          res.redirect('/')
+        }
+        var randimg = Math.floor(Math.random()*(timpics.data.length))
+        var pic1 = timpics.data[randimg].source
+        var cap1 = timpics.data[randimg].id
+        req.session.cap1 = cap1
+        res.render('index', {
+          pic1:pic1,
+          title:"profile", 
+          photo:req.session.profpic, 
+          first_name:req.session.first_name
         });
       });
     });
   });
 });
 
-app.post('/', facebookGetUser(), function (req, res) {
-  if (req.body.userdefinedbackground) {
-    req.session.userdefinedbackground = req.body.userdefinedbackground
-  }
-  if (req.body.ppicsize) {
-    req.session.ppicsize = req.body.ppicsize
-  }
-  req.facebook.api(req.session.ppicsize, function(err, ppic) {
-    var profpic = ppic.data.url
-    req.facebook.api('/me/friends', function(err, friends) {
-      if (req.body.changefriend == 'true') {
-        req.session.friend = Math.floor(Math.random()*(friends.data.length))
-      }
-      req.facebook.api('/'+friends.data[req.session.friend].id+'/picture?redirect=false&type=large', function(err,fppic) {
-        var friendpic = fppic.data.url
-        var friendname = friends.data[req.session.friend].name
-        res.render('index', {
-          title:"profile", 
-          photo:profpic, 
-          first_name:req.session.first_name, 
-          friendpic:friendpic, 
-          friendname:friendname,
-          userdefinedbackground:req.session.userdefinedbackground
-        });
-      })
-    })
-  })
-})
+app.post('/comment', function (req, res) {
+  console.log('/'+req.session.cap1)
+  req.facebook.api('/'+req.session.cap1 + "/comments", 'POST', {'message':req.body.message}, function (err, stuff) {
+    if(err)
+      return console.log("Can't post comment to photo");
+    res.redirect('/');
+  });
+});
 
-app.get('/friends', facebookGetUser(), function (req, res) {
+app.post('/friends', facebookGetUser(), function (req, res) {
   req.facebook.api('/me/friends', function(err, friends) {
     res.send(friends)
   }); 

@@ -5,45 +5,12 @@ block content
   h1 Welcome to your myfacebookspace, #{first_name}!
   img(src=photo)
   
-
-  ul#menu
-    li
-        form(action = '/logout', method = 'get', id='listitem')
-              input(type = 'submit', value = 'Logout')
-      li
-        a(href='#') Change Background
-        ul
-          li
-            form(action = '/', method = 'post')
-              input(type='hidden', name = 'userdefinedbackground', value = 'white')
-              input(type = 'submit', value = 'White')
-          li
-            form(action = '/', method = 'post')
-              input(type='hidden', name = 'userdefinedbackground', value = 'red')
-              input(type = 'submit', value = 'Red')
-          li
-            form(action = '/', method = 'post')
-              input(type='hidden', name = 'userdefinedbackground', value = 'blue')
-              input(type = 'submit', value = 'Blue')
-      li
-        a(href='#') Resize profile picture
-        ul
-          li
-            form(action = '/', method = 'post')
-              input(type='hidden', name = 'ppicsize', value = '/me/picture?redirect=false&type=small')
-              input(type = 'submit', value = 'Small')
-          li
-            form(action = '/', method = 'post')
-              input(type='hidden', name = 'ppicsize', value = '/me/picture?redirect=false&type=large')
-              input(type = 'submit', value = 'Large')
-      li
-        form(action = '/', method = 'post', id='listitem')
-              input(type='hidden', name = 'changefriend', value = 'true')
-              input(type = 'submit', value = 'Change your top friend')
   <br>
-  p(id='topfriend') My top friend is #{friendname}!
-  img(src=friendpic)
-  style
-    body{
-    background-color:#{userdefinedbackground};
-    }
+  <br>
+  Caption Russian Roulette: 
+  div(id = 'carousel')
+    div
+      img(src=pic1)
+  form(action='/comment', method='post')
+    input(type='text', name = 'message')
+    input(type='submit')
